@@ -1,0 +1,7 @@
+myenv/
+.env
+database/
+images/
+__pycache__/
+tmp/
+test/
