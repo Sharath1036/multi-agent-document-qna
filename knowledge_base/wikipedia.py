@@ -19,8 +19,8 @@ class WikipediaKnowledgeAgent:
         self.collection_name = "wikipedia-embeddings"
         self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
-        self.knowledge_base = self._init_knowledge_base()
-        self.agent = self._init_agent()
+        self.knowledge_base = None
+        self.agent = None
 
     def _init_vector_db(self, vector_database: str):
         if vector_database == 'Qdrant':
@@ -29,12 +29,14 @@ class WikipediaKnowledgeAgent:
             mongo_db = MongoVectorDB()
             return mongo_db.initialize_db(collection_name=self.collection_name)
 
-    def _init_knowledge_base(self) -> WikipediaKnowledgeBase:
-        return WikipediaKnowledgeBase(
-            topics=["Indian Cricket Team", "Australian Cricket Team"],
+    def set_topics(self, topics: list[str]):
+        """Set the topics for the Wikipedia knowledge base"""
+        self.knowledge_base = WikipediaKnowledgeBase(
+            topics=topics,
             vector_db=self.vector_db,
             embedder=self.embedder
         )
+        self.agent = self._init_agent()
 
     def _init_agent(self) -> Agent:
         return Agent(
@@ -49,17 +51,26 @@ class WikipediaKnowledgeAgent:
         print(f"Embedding Dimension: {len(embeddings)}")
 
     def load_documents(self, recreate: bool = False):
+        if self.knowledge_base is None:
+            raise ValueError("Topics must be set before loading documents")
         self.knowledge_base.load(recreate=recreate)
 
     def query(self, prompt: str, markdown: bool = True):
-        self.agent.print_response(prompt, markdown=markdown)
+        if self.agent is None:
+            raise ValueError("Topics must be set before querying")
+        response = self.agent.run(prompt, markdown=markdown)
+        print(f"Raw response from agent.run(): {response}")
+        print(f"Content from response: {response.content}")
+        return response.content
 
 
 if __name__ == "__main__":
     vector_database = 'MongoDb' 
     runner = WikipediaKnowledgeAgent(vector_database=vector_database)
 
+    # Example usage
+    topics = ["Indian Cricket Team", "Australian Cricket Team"]
+    runner.set_topics(topics)
     runner.embed_sample("The quick brown fox jumps over the lazy dog.")
     runner.load_documents(recreate=False)
-    
     runner.query("How many ICC trophies has India won till date?", markdown=True)

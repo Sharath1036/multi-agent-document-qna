@@ -49,7 +49,8 @@ class PDFUrlKnowledgeAgent:
         self.knowledge_base.load(recreate=recreate)
 
     def query(self, prompt: str, markdown: bool = True):
-        self.agent.print_response(prompt, markdown=markdown)
+        response = self.agent.run(prompt, markdown=markdown)
+        return response.content
 
 
 if __name__ == "__main__":
