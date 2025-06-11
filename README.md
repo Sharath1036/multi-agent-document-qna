@@ -1,76 +1,12 @@
-# Markdown syntax guide
-
-## Headers
-
-# This is a Heading h1
-## This is a Heading h2
-###### This is a Heading h6
-
-## Emphasis
-
-*This text will be italic*  
-_This will also be italic_
-
-**This text will be bold**  
-__This will also be bold__
-
-_You **can** combine them_
-
-## Lists
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-    * Item 3a
-    * Item 3b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-    1. Item 3a
-    2. Item 3b
-
-## Images
-
-![This is an alt text.](/image/sample.webp "This is a sample image.")
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blockquotes
-
-> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
->
->> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
-
-## Tables
-
-| Left columns  | Right columns |
-| ------------- |:-------------:|
-| left foo      | right foo     |
-| left bar      | right bar     |
-| left baz      | right baz     |
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## Inline code
-
-This web site is using `markedjs/marked`.
-
 # Multi Agent Document Q&A
 
-## MongoDB Setup
+## Pull the code
+```
+git clone https://github.com/Sharath1036/multi-agent-document-qna.git
+```
+
+## Running the code through Python
+### MongoDB Setup
 Obtain `MONGO_CONNECTION_STRING` from MongoDB Atlas and create a Search Index as Vector Index Search. Set index name as `vector-search`.<br><br>
 Set configuration method as JSON and paste the following JSON
 ```
@@ -100,19 +36,13 @@ db.createCollection('pdf-url-embeddings')
 db.createCollection('wikipedia-embeddings')
 ```
 
-## Ollama Setup
+### Ollama Setup
 We'll be using `openhermes` model for creating embeddings. When you download Ollama in your system, it is be default hosted on `localhost:11434`
 ```
 ollama pull openhermes
 ```
 
-## Pull the code
-
-```
-git clone https://github.com/Sharath1036/multi-agent-document-qna.git
-```
-
-## Set environmental variables
+### Set environmental variables
 Create a file `.env` and add the following secrets
 ```
 MONGO_CONNECTION_STRING = 'mongodb+srv://<username>:<password>@cluster0.c7jzf5l.mongodb.net.......?'
@@ -120,7 +50,7 @@ QDRANT_API_KEY = '...'
 QDRANT_URL = '...'
 ```
 
-## Running the code through Python
+### Inside the code file
 Activate virtual environment
 ```
 python -m venv myenv
