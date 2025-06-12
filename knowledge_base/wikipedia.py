@@ -10,8 +10,8 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from VectorDB.MongoDB import MongoVectorDB
-from VectorDB.Qdrant import QdrantVectorDB
+from vector_db.mongo import MongoVectorDB
+from vector_db.qdrant import QdrantVectorDB
 
 class WikipediaKnowledgeAgent:
     def __init__(self, vector_database: str):
