@@ -1,6 +1,6 @@
 # Multi Agent Document Q&A
 
-The code performs question and answering by performing vector search on documents inside MongoDB vector database embedded from knowledge bases such as Word Document, PDF URL or Wikipedia.
+The code performs question and answering by performing vector search on documents inside MongoDB vector database embedded from knowledge bases such as websites, PDF URL or Wikipedia.
 
 ## Pull the code
 ```
@@ -36,6 +36,9 @@ db.createCollection('pdf-url-embeddings')
 ```
 ```
 db.createCollection('wikipedia-embeddings')
+```
+```
+db.createCollection('website-embeddings')
 ```
 
 ### Ollama Setup
@@ -102,6 +105,8 @@ Now the FastAPI application will be available at:
 ## Running the code with docker-compose (easier)
 ```
 docker-compose up --build
+OR
+docker-compose up -d --build # in detached mode
 ```
 Now the FastAPI application will be available at:
 * http://localhost:8000
@@ -142,17 +147,19 @@ Schema for `/query-wikipedia`
 }
 ```
 
-Schema for `/initialize-docx`
+Schema for `/initialize-website`
 ```
 {
-  "path": "docs/mechanical_softwares.docx"
+  "urls": [
+    "https://www.iplt20.com/teams/mumbai-indians"
+  ]
 }
 ```
 
-Schema for `/query-docx`
+Schema for `/query-website`
 ```
 {
-  "query": "What all simulation softwares are listed in the document?",
+  "query": "Who is the head coach of Mumbai Indians?",
   "markdown": true
 }
 ```

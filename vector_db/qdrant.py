@@ -8,7 +8,7 @@ class QdrantVectorDB:
         self.qdrant_url = getenv("QDRANT_URL")
         self.qdrant_api_key = getenv("QDRANT_API_KEY")
         
-    def initialize_db(self, collection: str):
+    def initialize_db(self, collection: str=None):
         return Qdrant(
             collection=collection,
             url=self.qdrant_url,

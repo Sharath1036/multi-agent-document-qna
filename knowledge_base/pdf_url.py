@@ -24,9 +24,11 @@ class PDFUrlKnowledgeAgent:
 
     def _init_vector_db(self, vector_database: str):
         if vector_database == 'Qdrant':
-            return QdrantVectorDB.initialize_db(collection=self.collection_name)
+            qdrant_db = QdrantVectorDB()
+            return qdrant_db.initialize_db(collection=self.collection_name)
         else:    
-            return MongoVectorDB().initialize_db(collection_name=self.collection_name)
+            mongo_db = MongoVectorDB()
+            return mongo_db.initialize_db(collection_name=self.collection_name)
 
     def _init_knowledge_base(self, urls: list[str]) -> PDFUrlKnowledgeBase:
         return PDFUrlKnowledgeBase(
