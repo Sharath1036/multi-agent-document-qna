@@ -109,13 +109,13 @@ Now the FastAPI application will be available at:
 
 ## Example parameters to try
 Schema for `/initialize-pdf`
-'''
+```
 {
   "urls": [
     "https://www.scollingsworthenglish.com/uploads/3/8/4/2/38422447/garth_stein_-_the_art_of_racing_in_the_rain.pdf"
   ]
 }
-'''
+```
 
 Schema for `/query-pdf`
 ```
