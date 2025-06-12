@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.knowledge.wikipedia import WikipediaKnowledgeBase
 from agno.embedder.ollama import OllamaEmbedder
-from agno.tools.duckduckgo import DuckDuckGoTools
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -41,8 +40,8 @@ class WikipediaKnowledgeAgent:
     def _init_agent(self) -> Agent:
         return Agent(
             knowledge=self.knowledge_base,
+            show_tool_calls=True,
             search_knowledge=True,
-            tools=[DuckDuckGoTools()]
         )
 
     def embed_sample(self, text: str):
@@ -56,14 +55,11 @@ class WikipediaKnowledgeAgent:
         self.knowledge_base.load(recreate=recreate)
 
     def query(self, prompt: str, markdown: bool = True):
-        if self.agent is None:
-            raise ValueError("Topics must be set before querying")
-        response = self.agent.run(prompt, markdown=markdown)
-        print(f"Raw response from agent.run(): {response}")
-        print(f"Content from response: {response.content}")
-        return response.content
+        response = self.agent.run(prompt, markdown=markdown) # comment out while testing
+        return response.content # comment out while testing
+        # self.agent.run(prompt, markdown=markdown) # uncomment while testing
 
-
+# For testing
 if __name__ == "__main__":
     vector_database = 'MongoDb' 
     runner = WikipediaKnowledgeAgent(vector_database=vector_database)

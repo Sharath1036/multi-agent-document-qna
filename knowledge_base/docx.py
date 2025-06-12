@@ -3,9 +3,11 @@ import os
 from os import getenv
 from dotenv import load_dotenv
 from agno.agent import Agent
-from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.knowledge.docx import DocxKnowledgeBase
 from agno.embedder.ollama import OllamaEmbedder
-from agno.models.groq import Groq
+from pathlib import Path
+from typing import Union
+
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -13,13 +15,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
 
-class PDFUrlKnowledgeAgent:
-    def __init__(self, urls: list[str], vector_database: str):
+class DocxKnowledgeAgent:
+    def __init__(self, path: Union[str,Path], vector_database: str):
         load_dotenv(override=True)
-        self.collection_name = "pdf-url-embeddings"
+        self.collection_name = "docx-embeddings"
         self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
-        self.knowledge_base = self._init_knowledge_base(urls)
+        self.knowledge_base = self._init_knowledge_base(path)
         self.agent = self._init_agent()
 
     def _init_vector_db(self, vector_database: str):
@@ -28,16 +30,15 @@ class PDFUrlKnowledgeAgent:
         else:    
             return MongoVectorDB().initialize_db(collection_name=self.collection_name)
 
-    def _init_knowledge_base(self, urls: list[str]) -> PDFUrlKnowledgeBase:
-        return PDFUrlKnowledgeBase(
-            urls=urls,
+    def _init_knowledge_base(self, path: Union[str,Path]) -> DocxKnowledgeBase:
+        return DocxKnowledgeBase(
+            path= Path(path) if isinstance(path, str) else path,
             vector_db=self.vector_db,
             embedder=self.embedder
         )
 
     def _init_agent(self) -> Agent:
         return Agent(
-            model=self.model,
             knowledge=self.knowledge_base,
             show_tool_calls=True,
             search_knowledge=True
@@ -58,13 +59,10 @@ class PDFUrlKnowledgeAgent:
 
 # For testing
 if __name__ == "__main__":
-    urls = [
-        "https://www.scollingsworthenglish.com/uploads/3/8/4/2/38422447/garth_stein_-_the_art_of_racing_in_the_rain.pdf"
-    ]
-
+    path = 'docs/mechanical_softwares.docx'
     vector_database = 'MongoDb' 
-    runner = PDFUrlKnowledgeAgent(urls=urls, vector_database=vector_database)
+    runner = DocxKnowledgeAgent(path=path, vector_database=vector_database)
 
     runner.embed_sample("The quick brown fox jumps over the lazy dog.")
     runner.load_documents(recreate=False)
-    runner.query("How did Eve die?", markdown=True)
+    runner.query("What all simulation softwares are mentioned in the document?", markdown=True)
