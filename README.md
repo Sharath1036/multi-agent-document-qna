@@ -126,13 +126,13 @@ Schema for `/query-pdf`
 ```
 
 Schema for `/initialize-wikipedia`
-'''
+```
 {
   "topics": [
     "Attack on Titan", "Jujutsu Kaisen"
   ]
 }
-'''
+```
 
 Schema for `/query-wikipedia`
 ```
@@ -143,11 +143,11 @@ Schema for `/query-wikipedia`
 ```
 
 Schema for `/initialize-docx`
-'''
+```
 {
   "path": "docs/mechanical_softwares.docx"
 }
-'''
+```
 
 Schema for `/query-docx`
 ```
