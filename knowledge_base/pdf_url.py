@@ -37,7 +37,6 @@ class PDFUrlKnowledgeAgent:
 
     def _init_agent(self) -> Agent:
         return Agent(
-            model=self.model,
             knowledge=self.knowledge_base,
             show_tool_calls=True,
             search_knowledge=True

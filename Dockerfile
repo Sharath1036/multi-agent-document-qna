@@ -18,6 +18,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create upload directory
+RUN mkdir -p /app/uploaded_docs && chmod 777 /app/uploaded_docs
+
 # Copy the application code
 COPY . .
 

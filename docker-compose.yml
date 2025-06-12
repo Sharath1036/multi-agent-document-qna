@@ -13,6 +13,7 @@ services:
       - ollama
     volumes:
       - .:/app
+      - uploaded_docs:/app/uploaded_docs
     networks:
       - app-network
 
@@ -37,6 +38,7 @@ services:
 volumes:
   mongodb_data:
   ollama_data:
+  uploaded_docs:
 
 networks:
   app-network:

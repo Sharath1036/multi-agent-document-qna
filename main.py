@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from knowledge_base.wikipedia import WikipediaKnowledgeAgent
 from knowledge_base.pdf_url import PDFUrlKnowledgeAgent
-from knowledge_base.docx import DocxKnowledgeAgent
+from knowledge_base.website import WebsiteKnowledgeAgent
 
 # Initialize FastAPI app
 app = FastAPI(title="Document Knowledge Base API")
@@ -19,9 +19,9 @@ load_dotenv(override=True)
 # Initialize agents
 wikipedia_agent = WikipediaKnowledgeAgent(vector_database='MongoDb')
 pdf_agent = None  # Will be initialized when URLs are provided
-docx_agent = None
+website_agent = None
 
-class PDFUrlsRequest(BaseModel):
+class UrlsRequest(BaseModel):
     urls: List[str]
 
 class TopicsRequest(BaseModel):
@@ -35,7 +35,7 @@ class QueryRequest(BaseModel):
     markdown: bool = True
 
 @app.post("/initialize-pdf")
-async def initialize_pdf(request: PDFUrlsRequest):
+async def initialize_pdf(request: UrlsRequest):
     """Initialize the PDF knowledge agent with provided URLs"""
     global pdf_agent
     try:
@@ -75,27 +75,31 @@ async def query_wikipedia(request: QueryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/initialize-docx")
-async def initialize_docx(request: DocxRequest):
-    """Initialize the Docx knowledge agent with provided path"""
-    global docx_agent
+@app.post("/initialize-website")
+async def initialize_website(request: UrlsRequest):
+    """Initialize the Website knowledge agent with provided URLs"""
+    global website_agent
     try:
-        docx_agent = DocxKnowledgeAgent(path=request.path, vector_database='MongoDb')
-        docx_agent.load_documents(recreate=False)
-        return {"message": "Docx knowledge base initialized successfully"}
+        print(f"Initializing website agent with URLs: {request.urls}")  # Debug log
+        website_agent = WebsiteKnowledgeAgent(urls=request.urls, vector_database='MongoDb')
+        print("Website agent created successfully")  # Debug log
+        website_agent.load_documents(recreate=False)
+        print("Documents loaded successfully")  # Debug log
+        return {"message": "Website knowledge base initialized successfully"}
     except Exception as e:
+        print(f"Error initializing website agent: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.post("/query-docx")
-async def query_docx(request: QueryRequest):
-    """Query the Docx knowledge base"""
-    if docx_agent is None:
-        raise HTTPException(status_code=400, detail="Docx knowledge base not initialized. Please initialize it first.")
+@app.post("/query-website")
+async def query_website(request: QueryRequest):
+    """Query the Website knowledge base"""
+    if website_agent is None:
+        raise HTTPException(status_code=400, detail="Website knowledge base not initialized. Please initialize it first.")
     try:
-        response = docx_agent.query(request.query, markdown=request.markdown)
+        response = website_agent.query(request.query, markdown=request.markdown)
         return {"response": response}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))    
+        raise HTTPException(status_code=500, detail=str(e))      
 
 
 if __name__ == "__main__":
