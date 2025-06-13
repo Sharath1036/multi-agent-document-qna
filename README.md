@@ -1,15 +1,19 @@
 # Multi Agent Document Q&A
 
-The code performs question and answering by performing vector search on documents inside MongoDB vector database embedded from knowledge bases such as websites, PDF URL or Wikipedia.
+The code performs question and answering by performing vector search on documents inside MongoDB or Qdrant vector database embedded from knowledge bases such as websites, PDF URL or Wikipedia.
 
 ## Pull the code
 ```
 git clone https://github.com/Sharath1036/multi-agent-document-qna.git
 ```
 
-## Running the code through Python
-### MongoDB Setup
-Obtain `MONGO_CONNECTION_STRING` from MongoDB Atlas and create a Search Index as Vector Index Search. Set index name as `vector-search`.<br><br>
+## MongoDB Setup
+Obtain `MONGO_CONNECTION_STRING` from MongoDB Atlas. In case you're sharing your connection string with a peer, the string must contain `tls` and  `tlsAllowInvalidCertificates` parameters. Example connection string:
+```
+MONGO_CONNECTION_STRING = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=false'
+```
+
+Next, create a Search Index as Vector Index Search. Set index name as `vector-search`.<br><br>
 Set configuration method as JSON and paste the following JSON
 ```
 {
@@ -41,22 +45,35 @@ db.createCollection('wikipedia-embeddings')
 db.createCollection('website-embeddings')
 ```
 
-### Ollama Setup
+## Qdrant Setup
+There are high chances that while sharing your `MONGO_CONNECTION_STRING` with a peer, the SSL connection may fail. As an alternative, we can use Qdrant as a vector database. You need to obtain `QDRANT_API_KEY` and `QDRANT_URL` from <a href='https://cloud.qdrant.io/'>here</a>.
+
+## Ollama Setup
 We'll be using `openhermes` model for creating embeddings. When you download Ollama in your system, it is be default hosted on `localhost:11434`
 ```
 ollama pull openhermes
 ```
 
-### Set environmental variables
+## Set environmental variables
 Create a file `.env` and add the following secrets
 ```
 OPENAI_API_KEY = '...'
-MONGO_CONNECTION_STRING = 'mongodb+srv://<username>:<password>@cluster0.c7jzf5l.mongodb.net.......?'
+MONGO_CONNECTION_STRING = '...'
 QDRANT_API_KEY = '...'
 QDRANT_URL = '...'
 ```
+`OPENAI_API_KEY` is required for generating response by performing vector search on documents inside the vector database.
 
-### Inside the code file
+## Configuring Vector Database
+You can configure the vector database in line 25 of `main.py`
+```
+vector_database =  'MongoDb'
+```
+```
+vector_database =  'Qdrant'
+```
+
+## Running the code through Python
 Activate virtual environment
 ```
 python -m venv myenv
@@ -74,6 +91,8 @@ uvicorn main:app --reload
 ```
 
 ## Running the code through Docker (without docker-compose)
+The advantage of running the code through Docker is that you need not set up MongoDB and Ollama in your system, not even Python. Docker will handle everything inside its container environment. However you do need to have `.env` file.<br><br>
+
 Build docker image
 ```
 docker build -t document-agent .

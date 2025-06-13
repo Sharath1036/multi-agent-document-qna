@@ -11,15 +11,18 @@ from knowledge_base.pdf_url import PDFUrlKnowledgeAgent
 from knowledge_base.website import WebsiteKnowledgeAgent
 
 # Initialize FastAPI app
-app = FastAPI(title="Document Knowledge Base API")
+app = FastAPI(title="API for Multi Agentic RAG based Q&A")
 
 # Load environment variables
 load_dotenv(override=True)
 
 # Initialize agents
-wikipedia_agent = WikipediaKnowledgeAgent(vector_database='MongoDb')
+wikipedia_agent = None
 pdf_agent = None  # Will be initialized when URLs are provided
 website_agent = None
+
+# Initialize vector database
+vector_database = 'Qdrant' # MongoDb
 
 class UrlsRequest(BaseModel):
     urls: List[str]
@@ -39,7 +42,7 @@ async def initialize_pdf(request: UrlsRequest):
     """Initialize the PDF knowledge agent with provided URLs"""
     global pdf_agent
     try:
-        pdf_agent = PDFUrlKnowledgeAgent(urls=request.urls, vector_database='MongoDb')
+        pdf_agent = PDFUrlKnowledgeAgent(urls=request.urls, vector_database=vector_database)
         pdf_agent.load_documents(recreate=False)
         return {"message": "PDF knowledge base initialized successfully"}
     except Exception as e:
@@ -59,7 +62,9 @@ async def query_pdf(request: QueryRequest):
 @app.post("/initialize-wikipedia")
 async def initialize_wikipedia(request: TopicsRequest):
     """Initialize the Wikipedia knowledge agent"""
+    global wikipedia_agent
     try:
+        wikipedia_agent = WikipediaKnowledgeAgent(vector_database=vector_database)
         wikipedia_agent.set_topics(topics=request.topics)
         wikipedia_agent.load_documents(recreate=False)
         return {"message": "Wikipedia knowledge base initialized successfully"}
@@ -81,7 +86,7 @@ async def initialize_website(request: UrlsRequest):
     global website_agent
     try:
         print(f"Initializing website agent with URLs: {request.urls}")  # Debug log
-        website_agent = WebsiteKnowledgeAgent(urls=request.urls, vector_database='MongoDb')
+        website_agent = WebsiteKnowledgeAgent(urls=request.urls, vector_database=vector_database)
         print("Website agent created successfully")  # Debug log
         website_agent.load_documents(recreate=False)
         print("Documents loaded successfully")  # Debug log
