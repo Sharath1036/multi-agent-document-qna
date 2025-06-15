@@ -23,4 +23,4 @@ jobs:
     - name: Build the Docker image
       run: docker build -t document-agent .
     - name: Push to Dockerhub
-      run: docker push Sharath1036/document-agent:latest
+      run: docker push sharath1036/document-agent:latest
