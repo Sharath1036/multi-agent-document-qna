@@ -20,7 +20,7 @@ jobs:
       run: |
         find . -type d -name "__pycache__" -exec rm -rf {} +
     - name: Pull Docker image
-      run: sudo docker pull document-agent:latest
+      run: sudo docker pull sharath1036/document-agent:latest
     - name: Delete Old docker container
       run: sudo docker rm -f document-agent-container || true
     - name: Run Docker Container
