@@ -9,7 +9,6 @@ from agno.models.groq import Groq
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
 
