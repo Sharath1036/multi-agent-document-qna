@@ -57,7 +57,6 @@ class PDFUrlKnowledgeAgent:
         return response.content # comment out while testing
         # self.agent.run(prompt, markdown=markdown) # uncomment while testing
 
-
 # For testing
 if __name__ == "__main__":
     urls = [
