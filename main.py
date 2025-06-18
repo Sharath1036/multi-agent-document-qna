@@ -22,16 +22,19 @@ pdf_agent = None  # Will be initialized when URLs are provided
 website_agent = None
 
 # Initialize vector database
-vector_database = 'Qdrant' # MongoDb
+vector_database = 'MongoDb' # MongoDb
 
 class UrlsRequest(BaseModel):
     urls: List[str]
+    vector_database: str
 
 class TopicsRequest(BaseModel):
     topics: List[str]
+    vector_database: str
 
 class DocxRequest(BaseModel):
     path: Union[str, Path]
+    vector_database: str
 
 class QueryRequest(BaseModel):
     query: str
@@ -42,7 +45,7 @@ async def initialize_pdf(request: UrlsRequest):
     """Initialize the PDF knowledge agent with provided URLs"""
     global pdf_agent
     try:
-        pdf_agent = PDFUrlKnowledgeAgent(urls=request.urls, vector_database=vector_database)
+        pdf_agent = PDFUrlKnowledgeAgent(urls=request.urls, vector_database=request.vector_database)
         pdf_agent.load_documents(recreate=False)
         return {"message": "PDF knowledge base initialized successfully"}
     except Exception as e:
@@ -64,7 +67,7 @@ async def initialize_wikipedia(request: TopicsRequest):
     """Initialize the Wikipedia knowledge agent"""
     global wikipedia_agent
     try:
-        wikipedia_agent = WikipediaKnowledgeAgent(vector_database=vector_database)
+        wikipedia_agent = WikipediaKnowledgeAgent(vector_database=request.vector_database)
         wikipedia_agent.set_topics(topics=request.topics)
         wikipedia_agent.load_documents(recreate=False)
         return {"message": "Wikipedia knowledge base initialized successfully"}
@@ -86,7 +89,7 @@ async def initialize_website(request: UrlsRequest):
     global website_agent
     try:
         print(f"Initializing website agent with URLs: {request.urls}")  # Debug log
-        website_agent = WebsiteKnowledgeAgent(urls=request.urls, vector_database=vector_database)
+        website_agent = WebsiteKnowledgeAgent(urls=request.urls, vector_database=request.vector_database)
         print("Website agent created successfully")  # Debug log
         website_agent.load_documents(recreate=False)
         print("Documents loaded successfully")  # Debug log
@@ -108,6 +111,4 @@ async def query_website(request: QueryRequest):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
-
-
+    uvicorn.run(app, host="0.0.0.0", port=8000)
