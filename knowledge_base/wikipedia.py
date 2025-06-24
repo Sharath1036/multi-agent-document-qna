@@ -11,6 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
+from storage.mongo import MongoDBStorage
 
 class WikipediaKnowledgeAgent:
     def __init__(self, vector_database: str):
@@ -19,6 +20,7 @@ class WikipediaKnowledgeAgent:
         self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
         self.knowledge_base = None
+        self.storage = self._init_storage()
         self.agent = None
 
     def _init_vector_db(self, vector_database: str):
@@ -38,9 +40,14 @@ class WikipediaKnowledgeAgent:
         )
         self.agent = self._init_agent()
 
+    def _init_storage(self) -> MongoDBStorage:
+        mongodb_storage = MongoDBStorage()
+        return mongodb_storage.initialize_storage()
+
     def _init_agent(self) -> Agent:
         return Agent(
             knowledge=self.knowledge_base,
+            storage=self.storage,
             show_tool_calls=True,
             search_knowledge=True,
         )

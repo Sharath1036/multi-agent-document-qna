@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
+from storage.mongo import MongoDBStorage
 
 class WebsiteKnowledgeAgent:
     def __init__(self, urls: list[str], vector_database: str):
@@ -20,6 +21,7 @@ class WebsiteKnowledgeAgent:
         self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
         self.knowledge_base = self._init_knowledge_base(urls)
+        self.storage = self._init_storage()
         self.agent = self._init_agent() 
 
     def _init_vector_db(self, vector_database: str):
@@ -37,11 +39,16 @@ class WebsiteKnowledgeAgent:
             vector_db=self.vector_db,
             embedder=self.embedder
         )
+    
+    def _init_storage(self) -> MongoDBStorage:
+        mongodb_storage = MongoDBStorage()
+        return mongodb_storage.initialize_storage()
 
 
     def _init_agent(self) -> Agent:
         return Agent(
             knowledge=self.knowledge_base,
+            storage=self.storage,
             show_tool_calls=True,
             search_knowledge=True
         )
