@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
-from vector_db.chroma import ChromaVectorDB
 
 class WebsiteKnowledgeAgent:
     def __init__(self, urls: list[str], vector_database: str):
@@ -30,9 +29,6 @@ class WebsiteKnowledgeAgent:
         elif vector_database == 'MongoDb':    
             mongo_db = MongoVectorDB()
             return mongo_db.initialize_db(collection_name=self.collection_name)
-        elif vector_database == 'ChromaDb':
-            chroma_db = ChromaVectorDB()
-            return chroma_db.initialize_db(collection=self.collection_name)
         else:
             raise ValueError(f"Invalid vector database: {vector_database}")
 

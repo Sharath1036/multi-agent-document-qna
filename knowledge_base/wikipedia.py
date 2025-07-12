@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
-from vector_db.chroma import ChromaVectorDB
+
 
 class WikipediaKnowledgeAgent:
     def __init__(self, vector_database: str):
@@ -29,9 +29,6 @@ class WikipediaKnowledgeAgent:
         elif vector_database == 'MongoDb':    
             mongo_db = MongoVectorDB()
             return mongo_db.initialize_db(collection_name=self.collection_name)
-        elif vector_database == 'ChromaDb':
-            chroma_db = ChromaVectorDB()
-            return chroma_db.initialize_db(collection=self.collection_name)
         else:
             raise ValueError(f"Invalid vector database: {vector_database}")
 
