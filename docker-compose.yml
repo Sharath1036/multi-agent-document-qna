@@ -1,28 +1,55 @@
+version: '3.8'
 services:
   app:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - MONGO_CONNECTION_STRING=mongodb://mongodb:27017
+      - MONGO_CONNECTION_STRING='mongodb://mongodb:27017'
       - OLLAMA_HOST=http://ollama:11434
     env_file:
       - .env
     depends_on:
-      - mongodb
-      - ollama
+      mongodb:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     volumes:
       - .:/app
-      - uploaded_docs:/app/uploaded_docs
     networks:
       - app-network
 
   mongodb:
-    image: mongo:latest
+    image: mongodb/mongodb-atlas-local
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
     ports:
-      - "27017:27017"
+      - "27019:27017"
     volumes:
-      - mongodb_data:/data/db
+      - data:/data/db
+      - config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+      ME_CONFIG_MONGODB_URL: 'mongodb://mongodb:27017'
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -32,13 +59,19 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     networks:
       - app-network
 
 volumes:
-  mongodb_data:
+  data:
+  config:
   ollama_data:
-  uploaded_docs:
 
 networks:
   app-network:

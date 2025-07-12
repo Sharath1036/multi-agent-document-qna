@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
-from storage.mongo import MongoDBStorage
+from vector_db.chroma import ChromaVectorDB
 
 class WikipediaKnowledgeAgent:
     def __init__(self, vector_database: str):
@@ -20,16 +20,20 @@ class WikipediaKnowledgeAgent:
         self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
         self.knowledge_base = None
-        self.storage = self._init_storage()
         self.agent = None
 
     def _init_vector_db(self, vector_database: str):
         if vector_database == 'Qdrant':
             qdrant_db = QdrantVectorDB()
             return qdrant_db.initialize_db(collection=self.collection_name)
-        else:    
+        elif vector_database == 'MongoDb':    
             mongo_db = MongoVectorDB()
             return mongo_db.initialize_db(collection_name=self.collection_name)
+        elif vector_database == 'ChromaDb':
+            chroma_db = ChromaVectorDB()
+            return chroma_db.initialize_db(collection=self.collection_name)
+        else:
+            raise ValueError(f"Invalid vector database: {vector_database}")
 
     def set_topics(self, topics: list[str]):
         """Set the topics for the Wikipedia knowledge base"""
@@ -40,14 +44,9 @@ class WikipediaKnowledgeAgent:
         )
         self.agent = self._init_agent()
 
-    def _init_storage(self) -> MongoDBStorage:
-        mongodb_storage = MongoDBStorage()
-        return mongodb_storage.initialize_storage()
-
     def _init_agent(self) -> Agent:
         return Agent(
             knowledge=self.knowledge_base,
-            storage=self.storage,
             show_tool_calls=True,
             search_knowledge=True,
         )

@@ -25,7 +25,6 @@ RUN mkdir -p /app/uploaded_docs && chmod 777 /app/uploaded_docs
 COPY . .
 
 # Set environment variables
-ENV MONGO_CONNECTION_STRING=mongodb://mongodb:27017
 ENV OLLAMA_HOST=http://ollama:11434
 
 # Expose the port the app runs on
