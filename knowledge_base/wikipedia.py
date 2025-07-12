@@ -3,6 +3,7 @@ import sys
 from os import getenv
 from dotenv import load_dotenv
 from agno.agent import Agent
+from agno.models.groq import Groq
 from agno.knowledge.wikipedia import WikipediaKnowledgeBase
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
@@ -40,6 +41,7 @@ class WikipediaKnowledgeAgent:
 
     def _init_agent(self) -> Agent:
         return Agent(
+            model=Groq(id="llama-3.3-70b-versatile"),
             knowledge=self.knowledge_base,
             show_tool_calls=True,
             search_knowledge=True,
