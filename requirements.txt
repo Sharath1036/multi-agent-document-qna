@@ -3,6 +3,9 @@ fastapi
 pymongo
 pypdf
 python-dotenv
+pydantic
+pydantic-settings
+pydantic-core
 qdrant-client
 uvicorn
 wikipedia
