@@ -7,13 +7,18 @@ The code performs question and answering by performing vector search on document
 git clone https://github.com/Sharath1036/multi-agent-document-qna.git
 ```
 
-## MongoDB Setup
-Obtain `MONGO_CONNECTION_STRING` from MongoDB Atlas. In case you're sharing your connection string with a peer, the string must contain `tls` and  `tlsAllowInvalidCertificates` parameters. Example connection string:
+## MongoDB Connection Setup
+Obtain `MONGO_CONNECTION_STRING` from MongoDB Atlas. Example connection string:
 ```
-MONGO_CONNECTION_STRING = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=false'
+MONGO_CONNECTION_STRING = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority'
 ```
 
-Next, create a Search Index as Vector Index Search. Set index name as `vector-search`.<br><br>
+If you're sharing your connection string with your friends, then you need to whitelist their public IPv4 address. For that in your cluster, go to `Security > Network Access`. Click on Add IP Address and add their IP address.
+
+If you're using a virtual machine for e.g. Amazon EC2, then add the Public IPv4 address of the created EC2 instance.
+
+## Mongo Atlas Vector Search Setup
+Create a Search Index as Vector Index Search. Set index name as `vector-search`.<br><br>
 Set configuration method as JSON and paste the following JSON
 ```
 {
@@ -63,15 +68,6 @@ QDRANT_API_KEY = '...'
 QDRANT_URL = '...'
 ```
 `OPENAI_API_KEY` is required for generating response by performing vector search on documents inside the vector database.
-
-## Configuring Vector Database
-You can configure the vector database in line 25 of `main.py`
-```
-vector_database =  'MongoDb'
-```
-```
-vector_database =  'Qdrant'
-```
 
 ## Running the code through Python
 Activate virtual environment
@@ -137,7 +133,8 @@ Schema for `/initialize-pdf`
 {
   "urls": [
     "https://www.scollingsworthenglish.com/uploads/3/8/4/2/38422447/garth_stein_-_the_art_of_racing_in_the_rain.pdf"
-  ]
+  ],
+  "vector_database": "MongoDb" # or Qdrant
 }
 ```
 
@@ -154,7 +151,8 @@ Schema for `/initialize-wikipedia`
 {
   "topics": [
     "Attack on Titan", "Jujutsu Kaisen"
-  ]
+  ],
+  "vector_database": "MongoDb" # or Qdrant
 }
 ```
 
@@ -171,7 +169,8 @@ Schema for `/initialize-website`
 {
   "urls": [
     "https://www.iplt20.com/teams/mumbai-indians"
-  ]
+  ],
+  "vector_database": "MongoDb" # or Qdrant
 }
 ```
 

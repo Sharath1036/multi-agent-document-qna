@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vector_db.mongo import MongoVectorDB
 from vector_db.qdrant import QdrantVectorDB
+from vector_db.chroma import ChromaVectorDB
 
 class WebsiteKnowledgeAgent:
     def __init__(self, urls: list[str], vector_database: str):
@@ -26,10 +27,14 @@ class WebsiteKnowledgeAgent:
         if vector_database == 'Qdrant':
             qdrant_db = QdrantVectorDB()
             return qdrant_db.initialize_db(collection=self.collection_name)
-        else:    
+        elif vector_database == 'MongoDb':    
             mongo_db = MongoVectorDB()
             return mongo_db.initialize_db(collection_name=self.collection_name)
-
+        elif vector_database == 'ChromaDb':
+            chroma_db = ChromaVectorDB()
+            return chroma_db.initialize_db(collection=self.collection_name)
+        else:
+            raise ValueError(f"Invalid vector database: {vector_database}")
 
     def _init_knowledge_base(self, urls: list[str]) -> WebsiteKnowledgeBase:
         return WebsiteKnowledgeBase(
@@ -38,7 +43,6 @@ class WebsiteKnowledgeAgent:
             embedder=self.embedder
         )
 
-
     def _init_agent(self) -> Agent:
         return Agent(
             knowledge=self.knowledge_base,
@@ -46,16 +50,13 @@ class WebsiteKnowledgeAgent:
             search_knowledge=True
         )
 
-
     def embed_sample(self, text: str):
         embeddings = self.embedder.get_embedding(text)
         print(f"Embeddings (first 5 values): {embeddings[:5]}")
         print(f"Embedding Dimension: {len(embeddings)}")
 
-
     def load_documents(self, recreate: bool = False):
         self.knowledge_base.load(recreate=recreate)
-
 
     def query(self, prompt: str, markdown: bool = True):
         response = self.agent.run(prompt, markdown=markdown)

@@ -25,15 +25,14 @@ RUN mkdir -p /app/uploaded_docs && chmod 777 /app/uploaded_docs
 COPY . .
 
 # Set environment variables
-ENV MONGO_CONNECTION_STRING=mongodb://mongodb:27017
 ENV OLLAMA_HOST=http://ollama:11434
 
 # Expose the port the app runs on
-EXPOSE 8080
+EXPOSE 8000
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/docs || exit 1
+    CMD curl -f http://localhost:8000/docs || exit 1
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"] 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
