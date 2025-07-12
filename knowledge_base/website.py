@@ -5,7 +5,6 @@ from os import getenv
 from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.knowledge.website import WebsiteKnowledgeBase
-from agno.embedder.ollama import OllamaEmbedder
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -17,7 +16,6 @@ class WebsiteKnowledgeAgent:
     def __init__(self, urls: list[str], vector_database: str):
         load_dotenv(override=True)
         self.collection_name = "website-embeddings"
-        self.embedder = OllamaEmbedder(id="openhermes", host='http://localhost:11434/', timeout=1000.0)
         self.vector_db = self._init_vector_db(vector_database)
         self.knowledge_base = self._init_knowledge_base(urls)
         self.agent = self._init_agent() 
@@ -36,7 +34,6 @@ class WebsiteKnowledgeAgent:
         return WebsiteKnowledgeBase(
             urls=urls,
             vector_db=self.vector_db,
-            embedder=self.embedder
         )
 
     def _init_agent(self) -> Agent:
@@ -45,11 +42,6 @@ class WebsiteKnowledgeAgent:
             show_tool_calls=True,
             search_knowledge=True
         )
-
-    def embed_sample(self, text: str):
-        embeddings = self.embedder.get_embedding(text)
-        print(f"Embeddings (first 5 values): {embeddings[:5]}")
-        print(f"Embedding Dimension: {len(embeddings)}")
 
     def load_documents(self, recreate: bool = False):
         self.knowledge_base.load(recreate=recreate)
@@ -67,7 +59,5 @@ if __name__ == "__main__":
 
     vector_database = 'MongoDb' 
     runner = WebsiteKnowledgeAgent(urls=urls, vector_database=vector_database)
-
-    runner.embed_sample("The quick brown fox jumps over the lazy dog.")
     runner.load_documents(recreate=False)
     runner.query("Who is the head coach?", markdown=True)
