@@ -39,7 +39,7 @@ class WebsiteKnowledgeAgent:
 
     def _init_agent(self) -> Agent:
         return Agent(
-            model=Groq(id="llama-3.3-70b-versatile")
+            model=Groq(id="llama-3.3-70b-versatile"),
             knowledge=self.knowledge_base,
             show_tool_calls=True,
             search_knowledge=True
