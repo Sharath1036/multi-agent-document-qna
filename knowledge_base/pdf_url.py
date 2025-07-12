@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
 from agno.embedder.ollama import OllamaEmbedder
-from agno.models.groq import Groq
 
 # Add the root directory of the project to sys.path (since it fails to identify VectorDB as a dir)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
